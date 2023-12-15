@@ -19,15 +19,18 @@ class bank:
     
     def create_acc(self):
         self.__name = name.get()
-        self.__acc_no = acc_no.get()
         self.__pin = pin.get()
         self.__balance = balance.get()
         self.__mobile_no = mobile_no.get()
-        query = 'insert into acc_detail( name ,acc_no, pin , balance , mobile_no) values (%s,%s,%s,%s,%s)'
-        val = (self.__name,self.__acc_no,self.__pin,self.__balance,self.__mobile_no)
+        query = 'insert into acc_detail( name , pin , balance , mobile_no) values (%s,%s,%s,%s)'
+        val = (self.__name,self.__pin,self.__balance,self.__mobile_no)
         self.cur.execute(query,val)
         self.con.commit()
-        messagebox.showinfo('Account' ,"Your Account is succesfully created")
+        query = f'select acc_no from acc_detail where mobile_no = {self.__mobile_no}'
+        self.cur.execute(query)
+        data = self.cur.fetchall()
+        ac_no = data[0]
+        messagebox.showinfo('Account' ,f"Your Account is succesfully created and Account_number is {ac_no}")
         
     def __check_pin(self , acc_no1 , pin1 ):
         query = f'select pin from acc_detail where acc_no = {acc_no1}'
@@ -65,7 +68,7 @@ class bank:
             query = f'update acc_detail set balance = {new_balance} where acc_no = {acc_no1} '
             self.cur.execute(query)
             self.con.commit()
-            messagebox.showinfo("Deposite",f'The amount {amount} rs is succesfully credited to your acc_ no =  {acc_no1}')
+            messagebox.showinfo("Deposite",f'The amount {amount1} rs is succesfully credited to your acc_ no =  {acc_no1}')
             messagebox.showinfo("Deposite",f'Now your balance is {new_balance}')
         else:
             messagebox.showinfo("Deposite",'Enter correct account number')
